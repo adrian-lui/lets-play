@@ -6,9 +6,10 @@ import org.springframework.data.annotation.Id;
 
 @Data
 @Builder
-public class AddUserRequest {
+public class AddProductRequest {
+    private String id;
     private String name;
-    private String email;
-    private String password;
-    private String role;
+    private String description;
+    private String userId;
+    private double price;
 }
