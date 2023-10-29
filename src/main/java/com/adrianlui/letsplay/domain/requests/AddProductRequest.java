@@ -1,13 +1,11 @@
-package com.adrianlui.letsplay.responses;
+package com.adrianlui.letsplay.domain.requests;
 
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 
 @Data
 @Builder
-public class ProductResponse {
-    private String id;
+public class AddProductRequest {
     private String name;
     private String description;
     private String userId;

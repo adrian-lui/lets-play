@@ -1,0 +1,5 @@
+spring:
+  data:
+    mongodb:
+      database: lets-play
+      uri: mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@letsplay.bur2hzf.mongodb.net/?retryWrites=true&w=majority

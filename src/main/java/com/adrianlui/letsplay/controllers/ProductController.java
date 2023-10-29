@@ -1,11 +1,10 @@
 package com.adrianlui.letsplay.controllers;
 
 import com.adrianlui.letsplay.domain.Product;
-import com.adrianlui.letsplay.requests.AddProductRequest;
-import com.adrianlui.letsplay.requests.UpdateProductRequest;
-import com.adrianlui.letsplay.responses.ProductResponse;
+import com.adrianlui.letsplay.domain.requests.AddProductRequest;
+import com.adrianlui.letsplay.domain.requests.UpdateProductRequest;
 import com.adrianlui.letsplay.services.ProductServiceImpl;
-import lombok.AllArgsConstructor;
+import com.adrianlui.letsplay.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,43 +14,48 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@AllArgsConstructor
-@RequestMapping("/product")
+@RequestMapping("/api/product")
 public class ProductController {
     @Autowired
-    private final ProductServiceImpl productService;
+    private ProductServiceImpl productService;
+
+    @Autowired
+    private UserServiceImpl userService;
 
     @GetMapping
-    public ResponseEntity<List<ProductResponse>> getAllProducts() {
-        return new ResponseEntity<>(productService.allProducts(),
-                HttpStatus.OK);
+    public ResponseEntity<List<Product>> getAllProducts() {
+        return new ResponseEntity<>(productService.findAllProducts(),
+                                    HttpStatus.OK);
+    }
+
+    @GetMapping("/find")
+    public ResponseEntity<List<Product>> getProductByUserId(@RequestParam String userid) {
+        List<Product> products = productService.findProductByUserId(userid);
+        if (products == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public void addProduct(@RequestBody AddProductRequest addProductRequest) {
-        productService.addProduct(addProductRequest);
+    public ResponseEntity<String> addProduct(@RequestBody AddProductRequest addProductRequest) {
+        String result = productService.addProduct(addProductRequest);
+        if (result.equals("INCOMPLETE")) {
+            return new ResponseEntity<>("Invalid product submitted", HttpStatus.BAD_REQUEST);
+        } else if (result.equals("INVALID_OWNER")) {
+            return new ResponseEntity<>("Product user id not found", HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>("Product added %s".formatted(addProductRequest.getName()), HttpStatus.CREATED);
     }
-
-//    @PostMapping("/login")
-//    public void login(@RequestBody LoginRequest loginRequest) {
-//        if (productService.loginProduct(loginRequest)) {
-//            System.out.println(loginRequest.getEmail() + " is authenticated");
-//        } else {
-//            System.out.println(loginRequest.getEmail() + " is not authenticated");
-//        }
-//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(@PathVariable("id") String id) {
         Optional<Product> product = productService.findProductById(id);
-        if (product.isPresent()) {
-            return new ResponseEntity<>(product.get(),
-                    HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null,
-                    HttpStatus.BAD_GATEWAY);
+        if (product.isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+
         }
+        return new ResponseEntity<>(product.get(), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
@@ -71,4 +75,6 @@ public class ProductController {
             return new ResponseEntity<>("Product not found", HttpStatus.BAD_REQUEST);
         }
     }
+
+
 }

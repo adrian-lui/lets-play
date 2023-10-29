@@ -1,13 +1,14 @@
-package com.adrianlui.letsplay.requests;
+package com.adrianlui.letsplay.domain.requests;
 
+import com.adrianlui.letsplay.domain.Role;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
 public class UpdateRequest {
-    private String name;
+    private String username;
     private String email;
     private String password;
-    private String role;
+    private Role role;
 }

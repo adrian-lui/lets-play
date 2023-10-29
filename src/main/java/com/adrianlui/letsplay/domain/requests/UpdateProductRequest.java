@@ -1,15 +1,14 @@
-package com.adrianlui.letsplay.requests;
+package com.adrianlui.letsplay.domain.requests;
 
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 
 @Data
 @Builder
-public class AddProductRequest {
+public class UpdateProductRequest {
     private String id;
     private String name;
     private String description;
     private String userId;
-    private double price;
+    private Double price;
 }
