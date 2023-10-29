@@ -8,6 +8,7 @@ import com.adrianlui.letsplay.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<String> addProduct(@RequestBody AddProductRequest addProductRequest) {
+    public ResponseEntity<String> addProduct(@Validated @RequestBody AddProductRequest addProductRequest) {
         String result = productService.addProduct(addProductRequest);
         if (result.equals("INCOMPLETE")) {
             return new ResponseEntity<>("Invalid product submitted", HttpStatus.BAD_REQUEST);
