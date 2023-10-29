@@ -60,7 +60,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateUserById(@PathVariable("id") String id, @RequestBody UpdateRequest updateRequest) {
+    public ResponseEntity<String> updateUserById(@Validated @PathVariable("id") String id, @RequestBody UpdateRequest updateRequest) {
         if (userService.updateUserById(id,
                                        updateRequest)) {
             return new ResponseEntity<>("User updated successfully",

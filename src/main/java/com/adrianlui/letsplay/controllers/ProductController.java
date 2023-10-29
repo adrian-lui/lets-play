@@ -60,7 +60,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateProductById(@PathVariable("id") String id, @RequestBody UpdateProductRequest updateProductRequest) {
+    public ResponseEntity<?> updateProductById(@Validated @PathVariable("id") String id, @RequestBody UpdateProductRequest updateProductRequest) {
         if (productService.updateProductById(id, updateProductRequest)) {
             return new ResponseEntity<>("Product updated successfully", HttpStatus.OK);
         } else {
