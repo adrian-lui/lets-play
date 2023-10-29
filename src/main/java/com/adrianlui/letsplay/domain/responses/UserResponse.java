@@ -9,7 +9,7 @@ import org.springframework.data.annotation.Id;
 public class UserResponse {
     @Id
     private String id;
-    private String name;
+    private String username;
     private String email;
     private String role;
 }

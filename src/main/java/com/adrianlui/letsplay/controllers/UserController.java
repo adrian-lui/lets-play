@@ -2,6 +2,7 @@ package com.adrianlui.letsplay.controllers;
 
 import com.adrianlui.letsplay.domain.User;
 import com.adrianlui.letsplay.domain.requests.UpdateRequest;
+import com.adrianlui.letsplay.domain.responses.UserResponse;
 import com.adrianlui.letsplay.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,10 +21,19 @@ public class UserController {
     @Autowired
     private UserServiceImpl userService;
 
+    private UserResponse userResponseMapper(User user) {
+        return UserResponse.builder().username(user.getUsername())
+                           .email(user.getEmail())
+                           .role(user.getRole().name())
+                           .id(user.getId()).build();
+    }
+
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers(@AuthenticationPrincipal Jwt principal) {
+    public ResponseEntity<List<UserResponse>> getAllUsers(@AuthenticationPrincipal Jwt principal) {
         System.out.println(principal.getClaims().toString());
-        return new ResponseEntity<>(userService.findAllUsers(),
+        List<UserResponse> cleanList = userService.findAllUsers().stream()
+                                                  .map(this::userResponseMapper).toList();
+        return new ResponseEntity<>(cleanList,
                                     HttpStatus.OK);
     }
 
@@ -37,10 +47,10 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable("id") String id) {
+    public ResponseEntity<UserResponse> getUserById(@PathVariable("id") String id) {
         Optional<User> user = userService.findUserById(id);
         if (user.isPresent()) {
-            return new ResponseEntity<>(user.get(),
+            return new ResponseEntity<>(userResponseMapper(user.get()),
                                         HttpStatus.OK);
         } else {
             return new ResponseEntity<>(null,
@@ -49,7 +59,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUserById(@PathVariable("id") String id, @RequestBody UpdateRequest updateRequest) {
+    public ResponseEntity<String> updateUserById(@PathVariable("id") String id, @RequestBody UpdateRequest updateRequest) {
         if (userService.updateUserById(id,
                                        updateRequest)) {
             return new ResponseEntity<>("User updated successfully",
