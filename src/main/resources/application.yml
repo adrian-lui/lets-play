@@ -3,3 +3,10 @@ spring:
     mongodb:
       database: lets-play
       uri: mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@letsplay.bur2hzf.mongodb.net/?retryWrites=true&w=majority
+server:
+  ssl:
+    key-alias: lets-play-https
+    key-store: classpath:lets-play.JKS
+    key-store-type: JKS
+    key-password: password
+  port: 443
