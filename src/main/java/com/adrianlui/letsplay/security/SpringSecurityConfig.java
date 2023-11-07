@@ -143,8 +143,7 @@ public class SpringSecurityConfig {
     public RegisteredClientRepository registeredClientRepository() {
         RegisteredClient oidcClient = RegisteredClient.withId(UUID.randomUUID().toString())
                                                       .clientId("client")
-                                                      .clientSecret(
-                                                              "$2a$10$MjSKUanjVWc5mh.rGPJkU.TYHI9Jc8OxtHPWzCv9.8si0LIUNTz46")
+                                                      .clientSecret("$2a$10$S/XJzoKSkMz0EuDcasGde.Y8uDuNTq6xwYG93T4Iaio/GWDzgmgJe") // adminpassword
                                                       .clientAuthenticationMethod(
                                                               ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                                                       .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)

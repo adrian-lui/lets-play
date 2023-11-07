@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,11 +32,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean addUser(User addUserRequest) {
         if (addUserRequest.getUsername() == null || addUserRequest.getEmail() == null || addUserRequest.getPassword() == null) {
-            return false;
+            throw new InvalidParameterException("Missing required fields");
+        }
+        if (userRepository.findByUsername(addUserRequest.getUsername()).isPresent() || userRepository.findByEmail(addUserRequest.getEmail()).isPresent()) {
+            throw new InvalidParameterException("Username or email already exists");
         }
         addUserRequest.setPassword(passwordEncoder().encode(addUserRequest.getPassword()));
         addUserRequest.setRole(Role.USER);
         userRepository.save(addUserRequest);
+//        userDetailsService.createUser(new SecurityUser(addUserRequest));
         System.out.printf("New user: %s is saved%n", addUserRequest.getUsername());
         return true;
     }

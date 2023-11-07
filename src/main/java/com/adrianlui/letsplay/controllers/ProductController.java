@@ -4,13 +4,14 @@ import com.adrianlui.letsplay.domain.Product;
 import com.adrianlui.letsplay.domain.requests.AddProductRequest;
 import com.adrianlui.letsplay.domain.requests.UpdateProductRequest;
 import com.adrianlui.letsplay.services.ProductServiceImpl;
-import com.adrianlui.letsplay.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,9 +20,6 @@ import java.util.Optional;
 public class ProductController {
     @Autowired
     private ProductServiceImpl productService;
-
-    @Autowired
-    private UserServiceImpl userService;
 
     @GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {
@@ -33,7 +31,7 @@ public class ProductController {
     public ResponseEntity<List<Product>> getProductByUserId(@RequestParam String userid) {
         List<Product> products = productService.findProductByUserId(userid);
         if (products == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            throw new UsernameNotFoundException("User id not found");
         }
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
@@ -42,9 +40,9 @@ public class ProductController {
     public ResponseEntity<String> addProduct(@Validated @RequestBody AddProductRequest addProductRequest) {
         String result = productService.addProduct(addProductRequest);
         if (result.equals("INCOMPLETE")) {
-            return new ResponseEntity<>("Invalid product submitted", HttpStatus.BAD_REQUEST);
+            throw new IllegalArgumentException("Invalid product submitted");
         } else if (result.equals("INVALID_OWNER")) {
-            return new ResponseEntity<>("Product user id not found", HttpStatus.BAD_REQUEST);
+            throw new UsernameNotFoundException("Product user id not found ");
         }
         return new ResponseEntity<>("Product added %s".formatted(addProductRequest.getName()), HttpStatus.CREATED);
     }
@@ -53,8 +51,7 @@ public class ProductController {
     public ResponseEntity<?> getProductById(@PathVariable("id") String id) {
         Optional<Product> product = productService.findProductById(id);
         if (product.isEmpty()) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-
+            throw new InvalidParameterException("Product id not found");
         }
         return new ResponseEntity<>(product.get(), HttpStatus.OK);
     }
@@ -64,7 +61,7 @@ public class ProductController {
         if (productService.updateProductById(id, updateProductRequest)) {
             return new ResponseEntity<>("Product updated successfully", HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("Product updating not found", HttpStatus.BAD_REQUEST);
+            throw new InvalidParameterException("Product id not found");
         }
     }
 
@@ -73,9 +70,7 @@ public class ProductController {
         if (productService.deleteProductById(id)) {
             return new ResponseEntity<>("Product deleted successfully", HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("Product not found", HttpStatus.BAD_REQUEST);
+            throw new InvalidParameterException("Product id not found");
         }
     }
-
-
 }

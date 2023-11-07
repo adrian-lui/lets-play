@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -39,10 +40,8 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<String> addUser(@Validated @RequestBody User addUserRequest) {
-        if (!userService.addUser(addUserRequest)) {
-            return new ResponseEntity<>("Invalid user details submitted", HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> addUser(@Validated @RequestBody User addUserRequest) {
+        userService.addUser(addUserRequest);
         return new ResponseEntity<>("User %s created successfully".formatted(addUserRequest.getUsername()),
                                     HttpStatus.CREATED);
     }
@@ -54,8 +53,7 @@ public class UserController {
             return new ResponseEntity<>(userResponseMapper(user.get()),
                                         HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(null,
-                                        HttpStatus.BAD_GATEWAY);
+            throw new UsernameNotFoundException("User id not found");
         }
     }
 
@@ -66,8 +64,7 @@ public class UserController {
             return new ResponseEntity<>("User updated successfully",
                                         HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("User updating not found",
-                                        HttpStatus.BAD_REQUEST);
+            throw new UsernameNotFoundException("User updating not found");
         }
     }
 
@@ -77,8 +74,7 @@ public class UserController {
             return new ResponseEntity<>("User deleted successfully",
                                         HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("User not found",
-                                        HttpStatus.BAD_REQUEST);
+            throw new UsernameNotFoundException("User not found");
         }
     }
 }
