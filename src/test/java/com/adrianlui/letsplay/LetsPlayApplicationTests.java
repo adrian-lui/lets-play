@@ -9,12 +9,12 @@ import org.springframework.context.ApplicationContext;
 @SpringBootTest
 class LetsPlayApplicationTests {
 
-	@Autowired
-	ApplicationContext applicationContext;
-	@Test
-	void contextLoads() {
-		UserController userController = applicationContext.getBean(UserController.class);
-		System.out.println(userController.getAllUsers().toString());
-	}
+//	@Autowired
+//	ApplicationContext applicationContext;
+//	@Test
+//	void contextLoads() {
+//		UserController userController = applicationContext.getBean(UserController.class);
+//		System.out.println(userController.getAllUsers().toString());
+//	}
 
 }

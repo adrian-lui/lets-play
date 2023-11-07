@@ -1,6 +1,7 @@
 package com.adrianlui.letsplay.security;
 
 import com.adrianlui.letsplay.domain.security.SecurityUser;
+import com.adrianlui.letsplay.services.CustomUserDetailsService;
 import com.adrianlui.letsplay.services.interfaces.UserService;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -54,8 +55,10 @@ import java.util.stream.Collectors;
 public class SpringSecurityConfig {
     public static final String AUTHORITIES_CLAIM_NAME = "roles";
 
-    @Autowired
-    private UserService userService;
+//    @Autowired
+//    private UserService userService;
+//    @Autowired
+    private final CustomUserDetailsService userDetailsService;
 
     private static KeyPair generateRsaKey() {
         KeyPair keyPair;
@@ -86,7 +89,7 @@ public class SpringSecurityConfig {
         return (context) -> {
             if (OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType())) {
                 context.getClaims().claims((claims) -> {
-                    UserDetails user = userDetailsService().loadUserByUsername(
+                    UserDetails user = this.userDetailsService.loadUserByUsername(
                             claims.get("sub").toString());
                     String roles = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(
                             Collectors.joining(" "));
@@ -127,12 +130,12 @@ public class SpringSecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        var userDetailsService = new InMemoryUserDetailsManager();
-        userService.findAllUsers().stream().map(SecurityUser::new).forEach(userDetailsService::createUser);
-        return userDetailsService;
-    }
+//    @Bean
+//    public UserDetailsService userDetailsService() {
+//        var userDetailsService = new InMemoryUserDetailsManager();
+//        userService.findAllUsers().stream().map(SecurityUser::new).forEach(userDetailsService::createUser);
+//        return userDetailsService;
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
