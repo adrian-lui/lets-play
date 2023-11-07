@@ -55,9 +55,6 @@ import java.util.stream.Collectors;
 public class SpringSecurityConfig {
     public static final String AUTHORITIES_CLAIM_NAME = "roles";
 
-//    @Autowired
-//    private UserService userService;
-//    @Autowired
     private final CustomUserDetailsService userDetailsService;
 
     private static KeyPair generateRsaKey() {
@@ -129,13 +126,6 @@ public class SpringSecurityConfig {
                 .formLogin(Customizer.withDefaults());
         return http.build();
     }
-
-//    @Bean
-//    public UserDetailsService userDetailsService() {
-//        var userDetailsService = new InMemoryUserDetailsManager();
-//        userService.findAllUsers().stream().map(SecurityUser::new).forEach(userDetailsService::createUser);
-//        return userDetailsService;
-//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
