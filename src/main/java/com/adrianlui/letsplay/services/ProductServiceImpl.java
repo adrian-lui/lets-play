@@ -7,8 +7,10 @@ import com.adrianlui.letsplay.repositories.ProductRepository;
 import com.adrianlui.letsplay.repositories.UserRepository;
 import com.adrianlui.letsplay.services.interfaces.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,6 +54,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public boolean updateProductById(String id, UpdateProductRequest updateProductRequest) {
+        if (updateProductRequest.getDescription() == null && updateProductRequest.getName() == null && updateProductRequest.getUserId() == null && updateProductRequest.getPrice() == null) {
+            throw new InvalidParameterException("Invalid request body");
+        }
         Optional<Product> toUpdate = productRepository.findById(id);
         if (toUpdate.isPresent()) {
             Product updatingProduct = toUpdate.get();
@@ -68,6 +73,9 @@ public class ProductServiceImpl implements ProductService {
                 updatingProduct.setPrice(updateProductRequest.getPrice());
             }
             if (updateProductRequest.getUserId() != null) {
+                if (userRepository.findById(updateProductRequest.getUserId()).isEmpty()) {
+                    throw new UsernameNotFoundException("User id not found");
+                }
                 updatingProduct.setUserId(updateProductRequest.getUserId());
             }
             productRepository.save(updatingProduct);

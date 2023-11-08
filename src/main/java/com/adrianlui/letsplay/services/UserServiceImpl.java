@@ -63,6 +63,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean updateUserById(String id, UpdateRequest updateRequest) {
+        if (updateRequest.getEmail() == null && updateRequest.getPassword() == null && updateRequest.getUsername() == null && updateRequest.getRole() == null) {
+            throw new InvalidParameterException("Invalid request body");
+        }
         Optional<User> toUpdate = userRepository.findById(id);
         if (toUpdate.isPresent()) {
             User updatingUser = toUpdate.get();

@@ -9,6 +9,6 @@ import org.springframework.context.ApplicationContext;
 public class LetsPlayApplication {
 
     public static void main(String[] args) {
-        ApplicationContext ctx = SpringApplication.run(LetsPlayApplication.class, args);
+        SpringApplication.run(LetsPlayApplication.class, args);
     }
 }
